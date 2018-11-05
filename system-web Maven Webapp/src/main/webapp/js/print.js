@@ -13,7 +13,7 @@ function printPage(areaId) {
                 return;
             } 
  
-            //数据
+            //数据 
             $("#printTem").html($("form").parent().html());
 
             var inputArr = $("#printTem").find("input:text,input:radio,input:checkbox,textarea,select");
