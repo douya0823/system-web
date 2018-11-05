@@ -1,4 +1,4 @@
-//打印
+//打印 远程修改测试
 var LODOP;
 function printPage(areaId) {
     var code = $("#lblWfType").val();
