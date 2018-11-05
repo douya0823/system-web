@@ -12,7 +12,7 @@ function printPage(areaId) {
                 alert(data.msg);
                 return;
             }
-
+ 
             //数据
             $("#printTem").html($("form").parent().html());
 
