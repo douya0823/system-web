@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_131">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/apache-tomcat-7.0.52/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="D:/apache-tomcat-7.0.52/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/Downloads/ss_css2-0.9.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/Downloads/pd4ml.jar/pd4ml_pro.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/org.json.simple-0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/org.apache.poi.xwpf.converter.core-1.0.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/org.apache.poi.xwpf.converter.xhtml-1.0.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/poi-scratchpad-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/commons-collections4-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/xerces-2.9.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/aspose-words-16.4.0-jdk16.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KJ00054/.m2/repository/js/xmlworker-5.5.1.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

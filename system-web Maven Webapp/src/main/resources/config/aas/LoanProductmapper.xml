@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.LoanProductDao">
+	<resultMap type="com.uaf.bean.LoanProduct" id="product">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getLoanProductPage" resultMap="product" parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from HT_PRODUCT t where 1=1
+		<if test="product.name!=null and product.name!=''">
+			and t.name like '%${product.name}%'
+		</if>
+		<if test="product.code!=null and product.code!=''">
+			and t.code like '%${product.code}%'
+		</if>
+		<if test="product.system_id!=null and product.system_id!=''">
+			and t.system_id=#{product.system_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{product.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{product.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getLoanProductCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from HT_PRODUCT t where 1=1
+		<if test="product.name!=null and product.name!=''">
+			and t.name like '%${product.name}%'
+		</if>
+		<if test="product.code!=null and product.code!=''">
+			and t.code like '%${product.code}%'
+		</if>
+		<if test="product.system_id!=null and product.system_id!=''">
+			and t.system_id=#{product.system_id}
+		</if>
+	</select>
+	<select id="getLoanProductById" resultMap="product"
+		parameterType="java.util.HashMap">
+		select * from ht_product where id=#{id}
+	</select>
+	<select id="getProductList" resultMap="product"
+		parameterType="java.util.HashMap">
+		select * from ht_product t where 1=1
+		<if test="name!=null and name!=''">
+			and t.name like '%${name}%'
+		</if>
+		<if test="code!=null and code!=''">
+			and t.code like '%${code}%'
+		</if>
+		<if test="system_id!=null and system_id!=''">
+			and t.system_id=#{system_id}
+		</if>
+		order by t.code
+	</select>
+	<insert id="insertLoanProduct" parameterType="com.uaf.bean.LoanProduct">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from ht_product
+		</selectKey>
+		insert into ht_product(id,name,code,system_id)
+		values(#{id},#{product.name},#{product.code},#{product.systemId})
+	</insert>
+		<update id="updateProduct" parameterType="com.uaf.bean.LoanProduct">
+		update ht_product t set
+		t.name=#{product.name},t.code=#{product.code},t.system_id=#{product.systemId}
+		where t.id=#{product.id}
+	</update>
+	<delete id="deleteProduct" parameterType="java.lang.String">
+		delete from ht_product t
+		where t.id=#{id}
+	</delete>
+</mapper>

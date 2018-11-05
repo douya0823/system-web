@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc"  
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans    
+                        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd    
+                        http://www.springframework.org/schema/context    
+                        http://www.springframework.org/schema/context/spring-context-4.0.xsd    
+                        http://www.springframework.org/schema/mvc    
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                        http://www.springframework.org/schema/aop 
+                        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                        http://www.springframework.org/schema/task 
+    					http://www.springframework.org/schema/task/spring-task.xsd
+                        http://www.springframework.org/schema/tx
+                    	http://www.springframework.org/schema/tx/spring-tx.xsd "
+                        >      
+	
+    <!-- 自动扫描 -->
+  	<context:component-scan base-package="com.uaf" use-default-filters="true">
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+  	</context:component-scan>
+  	
+  	<!-- 引入配置文件 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	   	<property name="locations">
+	   		<list>
+	   			<value>classpath*:oracle.properties</value>
+	   		</list>
+	   	</property>
+	</bean>      
+	
+	 <!-- 连接池 -->
+    <!-- destroy-method="close"的作用是当数据库连接不使用的时候,就把该连接重新放到数据池中,方便下次使用调用.  -->
+    <bean id = "aas" class = "com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    	<property name = "driverClassName" value = "${oracle.db.driver}"      />
+    	<property name = "url"             value = "${oracle.db.aasurl}"         />
+    	<property name = "username"        value = "${oracle.db.aasusername}"    />
+    	<property name = "password"        value = "${oracle.db.aaspassword}"    />
+    	<!-- 初始化连接大小 -->
+    	<property name = "initialSize"     value = "${oracle.db.initialSize}" />
+    	<!-- 连接池最大数量 -->  
+        <property name = "maxActive"       value = "${oracle.db.maxActive}"   />  
+        <!-- 连接池最大空闲 -->  
+        <property name = "maxIdle"         value = "${oracle.db.maxIdle}"     />  
+        <!-- 连接池最小空闲 -->  
+        <property name = "minIdle"         value = "${oracle.db.minIdle}"     />  
+        <!-- 获取连接最大等待时间 -->  
+        <property name = "maxWait"         value = "${oracle.db.maxWait}"     />  
+        <!-- 超过时间限制是否回收 --> 
+		<property name="removeAbandoned" value="true" /> 
+		<!-- 超时时间；单位为秒。180秒=3分钟 --> 
+		<property name="removeAbandonedTimeout" value="1800" /> 
+		<!-- 关闭abanded连接时输出错误日志 --> 
+		<property name="logAbandoned" value="true" />
+    </bean>
+
+    
+    
+	<!-- shiro.xml 暂时没用 
+	<import resource="spring-shiro.xml"/>-->
+     
+	<import resource="spring-mybatis.xml"/>
+	
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->  
+    <bean id="aastransactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="aas" />  
+    </bean>  
+    
+
+    <tx:annotation-driven transaction-manager="aastransactionManager" />
+    <tx:annotation-driven transaction-manager="crttransactionManager" />
+    <tx:annotation-driven transaction-manager="instransactionManager" />
+    	<!-- ===================业务bean配置开始=================== -->
+ 	<!-- 初始化日志和数据库连接 -->
+<!--  	<bean id="iInitService" class="com.uaf.score.common.service.impl.InitServiceImpl" >
+ 	</bean>
+ 	
+ 	<bean class="com.uaf.score.common.InitController" init-method="init">
+ 		<property name="iInitService" ref="iInitService"></property>
+ 	</bean> -->
+
+ 	<!-- ===================业务bean配置结束=================== -->
+ 	
+ 	    <!-- 线程池，完成系统需要异步的任务 -->
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="2" /><!-- 核心线程数 -->
+		<property name="maxPoolSize" value="10" /><!-- 最大线程数 -->
+		<property name="keepAliveSeconds" value="500" /><!-- 线程所允许的空闲时间 -->
+		<property name="queueCapacity" value="5000" /><!-- 工作队列最大长度 -->
+	</bean>
+	
+    
+    <task:annotation-driven executor="asyncExecutor" />  
+    <task:executor id="asyncExecutor" pool-size="100-10000" queue-capacity="2000" />  
+</beans>

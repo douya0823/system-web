@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.ContractParamDao">
+	<resultMap type="com.uaf.bean.ContractParam" id="contractParam">
+		<association column="model_id" property="contractModel"
+			javaType="com.uaf.bean.ContractModel" select="com.uaf.dao.ContractModelDao.getContractModelById"></association>
+		<association column="param_id" property="param"
+			javaType="com.uaf.bean.LoanParam" select="com.uaf.dao.LoanParamDao.getLoanParamById"></association>
+	</resultMap>
+
+	<select id="getContractParamPage" resultMap="contractParam"
+		parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from HT_CONTRACT_PARAM t
+		left join ht_model f on t.model_id=f.id 
+		where
+		1=1
+		<if test="param.model_id!=null and param.model_id!=''">
+			and t.model_id=#{param.model_id}
+		</if>
+		<if test="param.param_id!=null and param.param_id!=''">
+			and t.param_id=#{param.param_id}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and f.system_id=#{param.system_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{param.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{param.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getContractParamCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from HT_CONTRACT_PARAM t 
+		left join ht_model f on t.model_id=f.id 
+		where 1=1
+		<if test="param.model_id!=null and param.model_id!=''">
+			and t.model_id=#{param.model_id}
+		</if>
+		<if test="param.param_id!=null and param.param_id!=''">
+			and t.param_id=#{param.param_id}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and f.system_id=#{param.system_id}
+		</if>
+	</select>
+		<select id="getContractParamList" resultMap="contractParam"
+		parameterType="java.util.HashMap">
+		select * from HT_CONTRACT_PARAM t
+		left join ht_param h on t.param_id=h.id
+		where
+		1=1
+		<if test="param.model_id!=null and param.model_id!=''">
+			and t.model_id=#{param.model_id}
+		</if>
+		<if test="param.param_id!=null and param.param_id!=''">
+			and t.param_id=#{param.param_id}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and f.system_id=#{param.system_id}
+		</if>
+		order by h.description
+	</select>
+	<select id="getContractParamById" resultMap="contractParam"
+		parameterType="java.util.HashMap">
+		select * from HT_CONTRACT_PARAM where id=#{id}
+	</select>
+	<insert id="insertContractParam" parameterType="com.uaf.bean.ContractParam">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from HT_CONTRACT_PARAM
+		</selectKey>
+		insert into
+		HT_CONTRACT_PARAM(id,model_id,param_id)
+		values(#{id},#{param.modelId},#{param.paramId})
+	</insert>
+	<update id="updateContractParam" parameterType="com.uaf.bean.ContractParam">
+		update
+		HT_CONTRACT_PARAM t set
+		t.model_id=#{param.modelId},t.param_id=#{param.paramId}
+		where
+		t.id=#{param.id}
+	</update>
+	<delete id="deleteContractParam" parameterType="java.lang.String">
+		delete from
+		HT_CONTRACT_PARAM t
+		where t.id=#{id}
+	</delete>
+</mapper>

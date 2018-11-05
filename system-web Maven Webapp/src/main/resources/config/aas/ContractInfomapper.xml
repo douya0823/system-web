@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.ContractInfoDao">
+	<resultMap type="com.uaf.bean.ContractInfo" id="contractInfo">
+		<result column="contract_id" property="contractId" jdbcType="VARCHAR" />
+		<result column="contract_code" property="contractCode"
+			jdbcType="VARCHAR" />
+		<association column="city_id" property="city"
+			javaType="com.uaf.bean.LoanCity" select="com.uaf.dao.LoanCityDao.getLoanCityById"></association>
+		<association column="contract_type" property="contractType"
+			javaType="com.uaf.bean.ContractType" select="com.uaf.dao.ContractTypeDao.getContractTypeById"></association>
+		<association column="product_id" property="product"
+			javaType="com.uaf.bean.LoanProduct" select="com.uaf.dao.LoanProductDao.getLoanProductById"></association>
+		<association column="model_id" property="contractModel"
+			javaType="com.uaf.bean.ContractModel" select="com.uaf.dao.ContractModelDao.getContractModelById"></association>
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getContractInfoPage" resultMap="contractInfo"
+		parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from ht_contract_info t where
+		1=1
+		<if test="param.city_id!=null and param.city_id!=''">
+			and t.city_id=#{param.city_id}
+		</if>
+		<if test="param.contract_code!=null and param.contract_code!=''">
+			and t.contract_code = #{param.contract_code}
+		</if>
+		<if test="param.contract_type!=null and param.contract_type!=''">
+			and t.contract_type=#{param.contract_type}
+		</if>
+		<if test="param.product_id!=null and param.product_id!=''">
+			and t.product_id=#{param.product_id}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{param.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{param.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getContractInfoCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from ht_contract_info t where
+		1=1
+		<if test="param.city_id!=null and param.city_id!=''">
+			and t.city_id=#{param.city_id}
+		</if>
+		<if test="param.contract_code!=null and param.contract_code!=''">
+			and t.contract_code = #{param.contract_code}
+		</if>
+		<if test="param.contract_type!=null and param.contract_type!=''">
+			and t.contract_type=#{param.contract_type}
+		</if>
+		<if test="param.product_id!=null and param.product_id!=''">
+			and t.product_id=#{param.product_id}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+	</select>
+	<select id="getContractInfoById" resultMap="contractInfo"
+		parameterType="java.util.HashMap">
+		select * from ht_contract_info where
+		contract_id=#{contract_id}
+	</select>
+	<select id="getContractInfoList" resultMap="contractInfo"
+		parameterType="java.util.HashMap">
+		select * from ht_contract_info t 
+		left join ht_city c on t.city_id=c.id
+		left join ht_product p on t.product_id=p.id
+		left join ht_contract_type n on t.contract_type=n.id
+		where 1=1
+		<if test="city_id!=null and city_id!=''">
+			and t.city_id=#{city_id}
+		</if>
+		<if test="city_code!=null and city_code!=''">
+			and c.code=#{city_code}
+		</if>
+		<if test="contract_code!=null and contract_code!=''">
+			and t.contract_code=#{contract_code}
+		</if>
+		<if test="contract_type!=null and contract_type!=''">
+			and t.contract_type=#{contract_type}
+		</if>
+		<if test="contract_type_code!=null and contract_type_code!=''">
+			and n.code=#{contract_type_code}
+		</if>
+		<if test="product_id!=null and product_id!=''">
+			and t.product_id=#{product_id}
+		</if>
+		<if test="product_code!=null and product_code!=''">
+			and p.code=#{product_code}
+		</if>
+		<if test="system_id!=null and system_id!=''">
+			and t.system_id=#{system_id}
+		</if>
+	</select>
+	<insert id="insertContractInfo" parameterType="com.uaf.bean.ContractInfo">
+		<selectKey keyProperty="contract_id" resultType="String"
+			order="BEFORE">
+			select max(to_number(contract_id))+1 from ht_contract_info
+		</selectKey>
+		insert into
+		ht_contract_info(contract_id,contract_code,city_id,contract_type,product_id,system_id)
+		values(#{contract_id},#{param.contractCode},#{param.cityId},#{param.contractTypeId},#{param.productId},#{param.systemId})
+	</insert>
+	<update id="updateContractInfo" parameterType="com.uaf.bean.ContractInfo">
+		update
+		ht_contract_info t
+		<trim prefix="set" prefixOverrides=",">
+			<if test="param.cityId!=null and param.cityId!=''">
+				t.city_id=#{param.cityId}
+			</if>
+			<if test="param.contractCode!=null and param.contractCode!=''">
+				,t.contract_code=#{param.contractCode}
+			</if>
+			<if test="param.contractTypeId!=null and param.contractTypeId!=''">
+				,t.contract_type=#{param.contractTypeId}
+			</if>
+			<if test="param.productId!=null and param.productId!=''">
+				,t.product_id=#{param.productId}
+			</if>
+			<if test="param.systemId!=null and param.systemId!=''">
+				,t.system_id=#{param.systemId}
+			</if>
+			<if test="param.modelId!=null and param.modelId!=''">
+				,t.model_id=#{param.modelId}
+			</if>
+			where t.contract_id=#{param.contractId}
+		</trim>
+	</update>
+	<delete id="deleteContractInfo" parameterType="java.lang.String">
+		delete from
+		ht_contract_info t
+		where t.contract_id=#{id}
+	</delete>
+</mapper>

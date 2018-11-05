@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.LoanParamDao">
+	<resultMap type="com.uaf.bean.LoanParam" id="param">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<association column="p_id" property="pId"
+			javaType="com.uaf.bean.LoanParam" select="com.uaf.dao.LoanParamDao.getLoanParamById"></association>
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getLoanParamPage" resultMap="param" parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from HT_PARAM t where 1=1
+		<if test="param.name!=null and param.name!=''">
+			and t.name like '%${param.name}%'
+		</if>
+		<if test="param.description!=null and param.description!=''">
+			and t.description like '%${param.description}%'
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+		<if test="param.p_id!=null and param.p_id!=''">
+			and t.p_id=#{param.p_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{param.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{param.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getLoanParamCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from HT_PARAM where 1=1
+		<if test="param.name!=null and param.name!=''">
+			and name like '%${param.name}%'
+		</if>
+		<if test="param.description!=null and param.description!=''">
+			and description like '%${param.description}%'
+		</if>
+		<if test="param.systemId!=null and param.systemId!=''">
+			and system_id=#{param.systemId}
+		</if>
+		<if test="param.p_id!=null and param.p_id!=''">
+			and t.p_id=#{param.p_id}
+		</if>
+	</select>
+	<select id="getLoanParamById" resultMap="param" parameterType="java.util.HashMap">
+		select * from HT_PARAM where id=#{id}
+	</select>
+	<select id="getLoanParamList" resultMap="param" parameterType="java.util.HashMap">
+		select * from HT_PARAM where 1=1
+		<if test="name!=null and name!=''">
+			and name like '%${name}%'
+		</if>
+		<if test="description!=null and description!=''">
+			and description like '%${description}%'
+		</if>
+		<if test="system_id!=null and system_id!=''">
+			and system_id=#{system_id}
+		</if>
+		<if test="p_id!=null and p_id!=''">
+			and p_id=#{p_id}
+		</if>
+	</select>
+	<insert id="insertLoanParam" parameterType="com.uaf.bean.LoanParam">
+		<selectKey keyProperty="id" resultType="string" order="BEFORE">
+			select HT_PARAMS_SEQUENCE.nextval from dual
+		</selectKey>
+		insert into HT_PARAM(id,p_id,name,description,system_id)
+		values(#{id},#{param.pId,jdbcType=VARCHAR},#{param.name},#{param.description},#{param.systemId})
+	</insert>
+	<update id="updateParam" parameterType="com.uaf.bean.LoanParam">
+		update HT_PARAM t set
+		p_id=#{param.pId,jdbcType=VARCHAR},
+		t.name=#{param.name},t.description=#{param.description},t.system_id=#{param.systemId}
+		where t.id=#{param.id}
+	</update>
+	<delete id="deleteParam" parameterType="java.lang.String">
+		delete from HT_PARAM t
+		where t.id=#{id} or t.p_id=#{id}
+	</delete>
+</mapper>

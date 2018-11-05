@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.ContractTypeDao">
+	<resultMap type="com.uaf.bean.ContractType" id="contractType">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getContractTypePage" resultMap="contractType"
+		parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from ht_contract_type t where
+		1=1
+		<if test="contractType.name!=null and contractType.name!=''">
+			and t.name like '%${contractType.name}%'
+		</if>
+		<if test="contractType.code!=null and contractType.code!=''">
+			and t.code like '%${contractType.code}%'
+		</if>
+		<if test="contractType.system_id!=null and contractType.system_id!=''">
+			and t.system_id=#{contractType.system_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{contractType.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{contractType.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getContractTypeCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from ht_contract_type t where
+		1=1
+		<if test="contractType.name!=null and contractType.name!=''">
+			and t.name like '%${contractType.name}%'
+		</if>
+		<if test="contractType.code!=null and contractType.code!=''">
+			and t.code like '%${contractType.code}%'
+		</if>
+		<if test="contractType.system_id!=null and contractType.system_id!=''">
+			and t.system_id=#{contractType.system_id}
+		</if>
+	</select>
+	<select id="getContractTypeById" resultMap="contractType"
+		parameterType="java.util.HashMap">
+		select * from ht_contract_type where id=#{id}
+	</select>
+	<select id="getContractTypeList" resultMap="contractType"
+		parameterType="java.util.HashMap">
+		select * from ht_contract_type t where 1=1
+		<if test="name!=null and name!=''">
+			and t.name like '%${name}%'
+		</if>
+		<if test="code!=null and code!=''">
+			and t.code like '%${code}%'
+		</if>
+		<if test="system_id!=null and system_id!=''">
+			and t.system_id=#{system_id}
+		</if>
+		order by t.code
+	</select>
+	<insert id="insertContractType" parameterType="com.uaf.bean.ContractType">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from ht_contract_type
+		</selectKey>
+		insert into ht_contract_type(id,name,code,system_id)
+		values(#{id},#{contractType.name},#{contractType.code},#{contractType.systemId})
+	</insert>
+	<update id="updateContractType" parameterType="com.uaf.bean.ContractType">
+		update
+		ht_contract_type t set
+		t.name=#{contractType.name},t.code=#{contractType.code},t.system_id=#{contractType.systemId}
+		where t.id=#{contractType.id}
+	</update>
+	<delete id="deleteContractType" parameterType="java.lang.String">
+		delete from
+		ht_contract_type t
+		where t.id=#{id}
+	</delete>
+</mapper>

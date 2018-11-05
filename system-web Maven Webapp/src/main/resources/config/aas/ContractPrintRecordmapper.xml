@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.ContractPrintRecordDao">
+	<resultMap type="com.uaf.bean.ContractPrintRecord" id="record">
+		<result column="contract_version_id" property="contractVersionId" jdbcType="VARCHAR" />
+		<result column="source" property="source" jdbcType="VARCHAR" />
+		<result column="partner" property="partner" jdbcType="VARCHAR" />
+		<result column="system_id" property="systemId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getContractPrintRecord" resultMap="record" parameterType="java.util.HashMap">
+		select * from HT_PRINT_RECORD
+	</select>
+	<select id="getContractPrintRecordById" resultMap="record" parameterType="java.util.HashMap">
+		select * from HT_PRINT_RECORD  where id=#{id}
+	</select>
+	<insert id="insertContractPrintRecord" parameterType="com.uaf.bean.ContractPrintRecord">
+		insert into HT_PRINT_RECORD(contract_version_id,source,partner,system_id)
+		values(#{record.contractVersionId},#{record.source},#{record.partner},#{record.systemId})
+	</insert>
+</mapper>

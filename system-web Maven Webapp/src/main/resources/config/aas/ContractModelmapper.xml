@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.ContractModelDao">
+	<resultMap type="com.uaf.bean.ContractModel" id="contractModel">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="version" property="version" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<association column="contract_type" property="contractType"
+			javaType="com.uaf.bean.ContractType" select="com.uaf.dao.ContractTypeDao.getContractTypeById"></association>
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getContractModelPage" resultMap="contractModel"
+		parameterType="java.util.HashMap">
+		select *  from 
+		(select t.*,rownum as rowno from ht_model t
+		where
+		1=1
+		<if test="param.version!=null and param.version!=''">
+			and t.version=#{param.version}
+		</if>
+		<if test="param.url!=null and param.url!=''">
+			and t.url=#{param.url}
+		</if>
+		<if test="param.contract_type!=null and param.contract_type!=''">
+			and t.contract_type=#{param.contract_type}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+		<if test="param.name!=null and param.name!=''">
+			and t.name like '%${param.name}%'
+		</if>
+		and rownum<![CDATA[<=]]>#{param.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{param.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getContractModelCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from ht_model t 
+		where 1=1
+		<if test="param.version!=null and param.version!=''">
+			and t.version=#{param.version}
+		</if>
+		<if test="param.url!=null and param.url!=''">
+			and t.url=#{param.url}
+		</if>
+		<if test="param.contract_type!=null and param.contract_type!=''">
+			and t.contract_type=#{param.contract_type}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+		<if test="param.name!=null and param.name!=''">
+			and t.name like '%${param.name}%'
+		</if>
+	</select>
+		<select id="getContractModelList" resultMap="contractModel"
+		parameterType="java.util.HashMap">
+		select * from  ht_model t
+		where
+		1=1
+		<if test="param.version!=null and param.version!=''">
+			and t.version=#{param.version}
+		</if>
+		<if test="param.url!=null and param.url!=''">
+			and t.url=#{param.url}
+		</if>
+		<if test="param.contract_type!=null and param.contract_type!=''">
+			and t.contract_type=#{param.contract_type}
+		</if>
+		<if test="param.system_id!=null and param.system_id!=''">
+			and t.system_id=#{param.system_id}
+		</if>
+		<if test="param.name!=null and param.name!=''">
+			and t.name like '%${param.name}%'
+		</if>
+		order by t.name
+	</select>
+	<select id="getContractModelById" resultMap="contractModel"
+		parameterType="java.util.HashMap">
+		select * from ht_model where id=#{id}
+	</select>
+	<insert id="insertContractModel" parameterType="com.uaf.bean.ContractModel">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from ht_model
+		</selectKey>
+		insert into ht_model(id,name,version,contract_type,system_id)
+		values(#{id},#{param.name},#{param.version},#{param.contractType},#{param.systemId})
+	</insert>
+	<update id="updateContractModel" parameterType="java.util.HashMap">
+		update
+		ht_model t 
+		<trim prefix="set" prefixOverrides=","> 
+			<if test="param.url!=null and param.url!=''">
+				 ,t.url =#{param.url}
+			</if>
+			<if test="param.name!=null and param.name!=''">
+				 ,t.name =#{param.name}
+			</if>
+			<if test="param.version!=null and param.version!=''">
+				 ,t.version =#{param.version}
+			</if>
+			<if test="param.contractType!=null and param.contractType!=''">
+				 ,t.contract_type=#{param.contractType}
+			</if>
+			<if test="param.systemId!=null and param.systemId!=''">
+				 ,t.system_id=#{param.systemId}
+			</if>
+			where t.id=#{param.id}
+		</trim>
+	</update>
+	<delete id="deleteContractModel" parameterType="java.lang.String">
+		delete from
+		ht_model t
+		where t.id=#{id}
+	</delete>
+</mapper>

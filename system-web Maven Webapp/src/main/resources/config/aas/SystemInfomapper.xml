@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.SystemInfoDao">
+	<resultMap type="com.uaf.bean.SystemInfo" id="systemInfo">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getSystemInfoPage" resultMap="systemInfo"
+		parameterType="java.util.HashMap">
+		select * from
+		(select t.*,rownum as rowno from ht_system_info t where
+		1=1
+		<if test="systemInfo.name!=null and systemInfo.name!=''">
+			and t.name=#{systemInfo.name}
+		</if>
+		and rownum<![CDATA[<=]]>#{systemInfo.endRow,jdbcType=INTEGER}
+		) temp
+		where temp.rowno<![CDATA[>]]>#{systemInfo.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getSystemInfoCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from ht_system_info t where
+		1=1
+		<if test="systemInfo.name!=null and systemInfo.name!=''">
+			and t.name=#{systemInfo.name}
+		</if>
+	</select>
+		<select id="getSystemInfoList" resultMap="systemInfo"
+		parameterType="java.util.HashMap">
+		select * from ht_system_info t where
+		1=1
+		<if test="systemInfo.name!=null and systemInfo.name!=''">
+			and t.name=#{systemInfo.name}
+		</if>
+	</select>
+	<select id="getSystemInfoById" resultMap="systemInfo"
+		parameterType="java.util.HashMap">
+		select * from ht_system_info where id=#{id}
+	</select>
+	<insert id="insertSystemInfo" parameterType="com.uaf.bean.SystemInfo">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from ht_system_info
+		</selectKey>
+		insert into ht_system_info(id,name)
+		values(#{id},#{systemInfo.name})
+	</insert>
+	<update id="updateSystemInfo" parameterType="com.uaf.bean.SystemInfo">
+		update
+		ht_system_info t set
+		t.name=#{systemInfo.name}}
+		where
+		t.id=#{systemInfo.id}
+	</update>
+	<delete id="deleteSystemInfo" parameterType="java.lang.String">
+		delete from
+		ht_system_info t
+		where t.id=#{id}
+	</delete>
+</mapper>

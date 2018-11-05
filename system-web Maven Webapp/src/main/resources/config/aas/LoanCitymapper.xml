@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uaf.dao.LoanCityDao">
+	<resultMap type="com.uaf.bean.LoanCity" id="loanCity">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<association column="system_id" property="systemInfo"
+			javaType="com.uaf.bean.SystemInfo" select="com.uaf.dao.SystemInfoDao.getSystemInfoById"></association>
+	</resultMap>
+
+	<select id="getLoanCityPage" resultMap="loanCity" parameterType="java.util.HashMap">
+		select * from
+		(select rownum as rowno,t.* from ht_city t
+		where 1=1
+		<if test="loanCity.name!=null and loanCity.name!=''">
+			and t.name like '%${loanCity.name}%'
+		</if>
+		<if test="loanCity.code!=null and loanCity.code!=''">
+			and t.code like '%${loanCity.code}%'
+		</if>
+		<if test="loanCity.system_id!=null and loanCity.system_id!=''">
+			and t.system_id=#{loanCity.system_id}
+		</if>
+		and rownum<![CDATA[<=]]>#{loanCity.endRow,jdbcType=INTEGER}
+		) city
+		where city.rowno<![CDATA[>]]>#{loanCity.firstRow,jdbcType=INTEGER}
+	</select>
+	<select id="getLoanCityCount" resultType="java.lang.Integer"
+		parameterType="java.util.HashMap">
+		select count(*) from ht_city where 1=1
+		<if test="loanCity.name!=null and loanCity.name!=''">
+			and name like '%${loanCity.name}%'
+		</if>
+		<if test="loanCity.code!=null and loanCity.code!=''">
+			and code like '%${loanCity.code}%'
+		</if>
+		<if test="loanCity.system_id!=null and loanCity.system_id!=''">
+			and system_id=#{loanCity.system_id}
+		</if>
+	</select>
+	<select id="getLoanCityById" resultMap="loanCity" parameterType="java.util.HashMap">
+		select * from ht_city where id=#{id}
+	</select>
+	<select id="getLoanCityList" resultMap="loanCity" parameterType="java.util.HashMap">
+		select * from ht_city t where 1=1
+		<if test="name!=null and name!=''">
+			and t.name like '%${name}%'
+		</if>
+		<if test="code!=null and code!=''">
+			and t.code like '%${code}%'
+		</if>
+		<if test="system_id!=null and system_id!=''">
+			and t.system_id=#{system_id}
+		</if>
+	</select>
+	<insert id="insertLoanCity" parameterType="com.uaf.bean.LoanCity">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select max(to_number(id))+1 from ht_city
+		</selectKey>
+		insert into ht_city(id,name,code,system_id)
+		values(#{id},#{loanCity.name},#{loanCity.code},#{loanCity.systemId})
+	</insert>
+	<update id="updateCity" parameterType="com.uaf.bean.LoanCity">
+		update ht_city t set t.name=#{loanCity.name},t.code=#{loanCity.code},t.system_id=#{loanCity.systemId} where t.id=#{loanCity.id} 
+	</update>
+	<delete id="deleteCity" parameterType="java.lang.String">
+		delete from ht_city t where t.id=#{id} 
+	</delete>
+</mapper>
